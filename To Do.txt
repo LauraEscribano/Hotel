@@ -1,0 +1,10 @@
+ALTER TABLE clients
+ADD COLUMN actiu TINYINT(1) DEFAULT 1;
+
+ALTER TABLE hotels
+  ADD CONSTRAINT fk_hotels_paisos
+    FOREIGN KEY (idPais)
+    REFERENCES paisos(idPais)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL;
+

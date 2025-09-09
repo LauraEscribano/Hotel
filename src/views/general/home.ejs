@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury Resort Experiences</title>
+  <!-- En el <head> -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+</head>
+
+<body>
+  <!-- Header -->
+
+  <%- include('../partials/header') %>
+
+    <!-- ========================== SECCIÓN 1: CARROUSEL PRINCIPAL ========================== -->
+
+    <div id="mainCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <!-- Primer ítem del carousel -->
+
+        <div class="carousel-item active">
+          <img src="/images/carousel_1.jpeg" class="d-block w-100" alt="Resort de Lujo" />
+          <div class="carousel-caption">
+            <h1 class="display-4">Experiencias Exclusivas</h1>
+            <p class="lead">
+              Descubra nuestros resorts de cinco estrellas con vistas
+              panorámicas al océano
+            </p>
+          </div>
+        </div>
+
+        <!-- Segundo ítem del carousel -->
+
+        <div class="carousel-item">
+          <img src="/images/carousel_2.avif" class="d-block w-100" alt="Piscina Infinita" />
+          <div class="carousel-caption">
+            <h1 class="display-4">Lujo Tropical</h1>
+            <p class="lead">
+              Relájese en nuestras piscinas infinitas con vistas al paraíso
+            </p>
+          </div>
+        </div>
+
+        <!-- Tercer ítem del carousel -->
+
+        <div class="carousel-item">
+          <img src="/images/carousel_3.jpeg" class="d-block w-100" alt="Suite de Lujo" />
+          <div class="carousel-caption">
+            <h1 class="display-4">Suites Elegantes</h1>
+            <p class="lead">
+              Experimente el máximo confort en nuestras suites de diseño
+              exclusivo
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón para retroceder en el carousel -->
+
+      <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+
+      <!-- Botón para avanzar en el carousel -->
+
+      <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
+    </div>
+
+    <!-- ========================== FIN DE SECCIÓN 1: CARROUSEL PRINCIPAL ========================== -->
+
+    <!-- ========================== SECCIÓN 2: FILTRO DE BÚSQUEDA ========================== -->
+
+    <div class="sticky-spacer"></div>
+    <div class="search-sticky-container">
+      <div class="container">
+        <div class="search-card">
+          <form action="/results" method="GET">
+            <div class="row g-2">
+              <!-- Selección 1: Destino -->
+
+              <div class="col-12 col-md-6 col-lg-3">
+                <label for="destination" class="form-label">Destino</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                  <select class="form-select" id="destination" name="destination" required>
+                    <option value="" selected disabled>Seleccione un destino</option>
+                    <% for (let group in groupedHotels) { %>
+                        <optgroup label="<%= group.split(' - ')[1] %>">
+                            <% if (groupedHotels[group].length > 1) { %>
+                                <option value="city-<%= group %>" class="city-option">
+                                    <i class="fas fa-city"></i> Todos los hoteles de <%= group.split(' - ')[1] %>
+                                </option>
+                            <% } %>
+                            
+                            <% groupedHotels[group].forEach(hotel => { %>
+                                <option value="hotel-<%= hotel.idHotel %>" class="hotel-option">
+                                    <%= hotel.nomHotel %>
+                                </option>
+                            <% }); %>
+                        </optgroup>
+                    <% } %>
+                </select>
+                </div>
+              </div>
+
+              <!-- Selección 2: Fecha de LLegada -->
+
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="check-in" class="form-label">Llegada</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="far fa-calendar-alt"></i>
+                  </span>
+                  <input type="date" class="form-control" id="check-in" name="check-in" required />
+                </div>
+              </div>
+
+              <!-- Selección 3: Fecha de Salida -->
+
+              <div class="col-6 col-md-3 col-lg-2">
+                <label for="check-out" class="form-label">Salida</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="far fa-calendar-alt"></i>
+                  </span>
+                  <input type="date" class="form-control" id="check-out" name="check-out" required />
+                </div>
+              </div>
+
+              <!-- Selección 4: Número de Habitaciones -->
+
+              <div class="col-6 col-md-4 col-lg-2">
+                <label for="rooms" class="form-label">Habitaciones</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-bed"></i></span>
+                  <select class="form-select" id="rooms" name="rooms" required>
+                    <option value="1">1 Habitación</option>
+                    <option value="2">2 Habitaciones</option>
+                    <option value="3">3 Habitaciones</option>
+                    <option value="4">4+ Habitaciones</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Selección 5: Número de Huéspedes -->
+
+              <div class="col-6 col-md-4 col-lg-3">
+                <label for="guests" class="form-label">
+                  Huéspedes
+                  <span class="text-muted ms-2" style="font-size: 0.85em">
+                    <i class="fas fa-info-circle"></i> Máx. 4</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-users"></i></span>
+                  <select class="form-select" id="adults" name="adults" required>
+                    <option value="1">1 Adulto</option>
+                    <option value="2" selected>2 Adultos</option>
+                    <option value="3">3 Adultos</option>
+                    <option value="4">4 Adultos</option>
+                  </select>
+                  <select class="form-select" id="children" name="children">
+                    <option value="0" selected>0 Niños</option>
+                    <option value="1">1 Niño</option>
+                    <option value="2">2 Niños</option>
+                    <option value="3">3 Niños</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Botón de Búsqueda -->
+              <div class="col-12 text-center mt-4">
+                <button type="submit" class="btn btn-primary px-5 py-2">
+                  <i class="fas fa-search me-2"></i>Buscar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================== FIN DE SECCIÓN 2: FILTRO DE BÚSQUEDA ========================== -->
+
+    <!-- ========================== SECCIÓN 3: NUESTRA ESENCIA ========================== -->
+
+    <section class="py-6 bg-light">
+      <div class="container">
+        <h2 class="text-center display-4 mb-5 section-title">
+          Nuestra Esencia
+        </h2>
+
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3 d-flex">
+            <div class="valor-card">
+              <div class="icon-wrapper"><i class="fas fa-trophy"></i></div>
+              <h3>Excelencia Galardonada</h3>
+              <p>
+                23 reconocimientos internacionales incluyendo el Premio World
+                Luxury Hotel Awards 2023
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3 d-flex">
+            <div class="valor-card">
+              <div class="icon-wrapper">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <h3>Ubicaciones Excepcionales</h3>
+              <p>
+                Propiedades estratégicas en enclaves exclusivos con acceso
+                privilegiado a los principales puntos de interés
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3 d-flex">
+            <div class="valor-card">
+              <div class="icon-wrapper">
+                <i class="fas fa-concierge-bell"></i>
+              </div>
+              <h3>Servicio Personalizado</h3>
+              <p>
+                Asistencia las 24 horas con gestores dedicados y experiencias a
+                medida para cada huésped
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3 d-flex">
+            <div class="valor-card">
+              <div class="icon-wrapper"><i class="fas fa-leaf"></i></div>
+              <h3>Lujo Responsable</h3>
+              <p>
+                Certificación LEED Platinum en todas nuestras propiedades y
+                programa de compensación de carbono
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================== FIN DE SECCIÓN 3: NUESTRA ESENCIA ========================== -->
+
+    <!-- ========================== SECCIÓN 4: NUESTROS DESTINOS EXCLUSIVOS ========================== -->
+
+    <section class="py-6 bg-luxury">
+      <div class="container">
+        <h2 class="text-center display-4 mb-5 section-title">
+          Nuestros Destinos Exclusivos
+        </h2>
+
+        <!-- Destino 1: Barcelona -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url(' /images/destinos/barcelona.jpg')">
+                            <div class="prestigio-badge">TOP EUROPA</div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="destino-contenido ps-lg-5">
+                  <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                    <span>Barcelona</span>
+                    <span class="widget-clima-minimal" data-ciudad="Barcelona"></span>
+                  </h3>
+                  <p class="destino-tagline mb-4">
+                    Donde el modernismo encuentra el mar
+                  </p>
+
+                  <p class="destino-descripcion mb-4">
+                    Capital cultural mediterránea con acceso exclusivo a
+                    experiencias arquitectónicas privadas, gastronomía con
+                    estrellas Michelin y yates de lujo en el Puerto Olímpico.
+                  </p>
+                  <div class="destino-highlights mb-5">
+                    <div class="d-flex flex-column gap-2">
+                      <div class="highlight-item">
+                        <i class="fas fa-hotel"></i>2 propiedades boutique
+                      </div>
+                      <div class="highlight-item">
+                        <i class="fas fa-unlock-alt"></i>Visitas privadas a la
+                        Sagrada Familia
+                      </div>
+                      <div class="highlight-item">
+                        <i class="fas fa-sailboat"></i>Puerto VIP con yates
+                        exclusivos
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn btn-luxury">
+                    Explorar Barcelona <i class="fas fa-chevron-right ms-2"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- Destino 2: Madrid -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5 flex-row-reverse">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/madrid.jpg')">
+                <div class="prestigio-badge">CULTURA REAL</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido pe-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Madrid</span>
+                  <span class="widget-clima-minimal" data-ciudad="Madrid"></span>
+                </h3>
+                <p class="destino-tagline mb-4">
+                  Elegancia regia en el corazón de España
+                </p>
+                <p class="destino-descripcion mb-4">
+                  Experiencias únicas tras bastidores en museos reales, rooftops
+                  exclusivos con vistas panorámicas y acceso a las mejores
+                  colecciones de arte privadas.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-infinity"></i>Piscinas infinity con
+                      vistas
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-horse"></i>Equitación en fincas privadas
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Madrid<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 3: Ibiza -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/ibiza.jpg')">
+                <div class="prestigio-badge">VIP EXPERIENCE</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido ps-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Ibiza</span>
+                  <span class="widget-clima-minimal" data-ciudad="Ibiza"></span>
+                </h3>
+                <p class="destino-tagline mb-4">
+                  Lujo y privacidad en el Mediterráneo
+                </p>
+                <p class="destino-descripcion mb-4">
+                  Refugio exclusivo con playas privadas, acceso a los eventos
+                  más selectos y wellness boutique en un entorno de diseño
+                  contemporáneo.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-umbrella-beach"></i>Resort con playa
+                      privada
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-spa"></i>Centro wellness de lujo
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-anchor"></i>Yate de 25m incluido
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Ibiza<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 4: Las Palmas de Gran Canaria -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5 flex-row-reverse">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="
+                  background-image: url('/images/destinos/gran-canaria.jpg');
+                ">
+                <div class="prestigio-badge">PARAÍSO ATLÁNTICO</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido pe-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Las Palmas</span>
+                  <span class="widget-clima-minimal" data-ciudad="Las Palmas"></span>
+                </h3>
+                <p class="destino-tagline mb-4">Eterna primavera con estilo</p>
+                <p class="destino-descripcion mb-4">
+                  Clima privilegiado todo el año con acceso a playas vírgenes,
+                  campos de golf exclusivos y gastronomía canaria reinventada.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-sun"></i>365 días de sol
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-golf-ball"></i>Campo de golf privado
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-wine-glass-alt"></i>Enotecas exclusivas
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Canarias<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 5: Mallorca -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/ibiza.jpg')">
+                <div class="prestigio-badge">LUJO MEDITERRÁNEO</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido ps-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Mallorca</span>
+                  <span class="widget-clima-minimal" data-ciudad="Mallorca"></span>
+                </h3>
+                <p class="destino-tagline mb-4">
+                  Elegancia entre montañas y calas
+                </p>
+                <p class="destino-descripcion mb-4">
+                  Propiedades señoriales con acceso a puertos exclusivos,
+                  viñedos privados y experiencias náuticas en aguas cristalinas.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-archway"></i>Fincas históricas
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-ship"></i>Cruceros privados
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-wine-bottle"></i>Bodegas exclusivas
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Mallorca<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 6: Hawaii -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5 flex-row-reverse">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/hawaii.jpg')">
+                <div class="prestigio-badge">PARAÍSO NATURAL</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido pe-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Hawaii</span>
+                  <span class="widget-clima-minimal" data-ciudad="Hawaii"></span>
+                </h3>
+                <p class="destino-tagline mb-4">
+                  Donde el lujo se funde con la naturaleza
+                </p>
+                <p class="destino-descripcion mb-4">
+                  Villas sobre acantilados con acceso privado a playas vírgenes
+                  y experiencias únicas en volcanes activos con guías expertos.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-water"></i>Villas sobre el océano
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-helicopter"></i>Tours en helicóptero
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Hawaii<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 7: Miami -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/miami.jpg')">
+                <div class="prestigio-badge">ESTILO URBANO</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido ps-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Miami</span>
+                  <span class="widget-clima-minimal" data-ciudad="Miami"></span>
+                </h3>
+                <p class="destino-tagline mb-4">
+                  Glamour contemporáneo frente al mar
+                </p>
+                <p class="destino-descripcion mb-4">
+                  Rascacielos con vistas panorámicas al océano, acceso a clubes
+                  exclusivos y experiencias culturales en el epicentro del arte
+                  moderno.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-building"></i>Penthouse de diseño
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-paint-brush"></i>Tours de arte urbano
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-ship"></i>Yates de lujo
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Miami<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 8: Cannes -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5 flex-row-reverse">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/cannes.jpg')">
+                <div class="prestigio-badge">GLAMOUR FRANCÉS</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido pe-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Cannes</span>
+                  <span class="widget-clima-minimal" data-ciudad="Cannes"></span>
+                </h3>
+                <p class="destino-tagline mb-4">Elegancia en la Costa Azul</p>
+                <p class="destino-descripcion mb-4">
+                  Experiencias cinematográficas exclusivas, acceso a eventos VIP
+                  del festival y cruceros privados por las calas francesas.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-film"></i>Acceso al Festival
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-sailboat"></i>Crucero por Lerins
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-utensils"></i>Gastronomía 3 estrellas
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Cannes<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 9: Suiza -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/suiza.jpg')">
+                <div class="prestigio-badge">ALPINE LUXURY</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido ps-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Suiza</span>
+                  <span class="widget-clima-minimal" data-ciudad="Suiza"></span>
+                </h3>
+                <p class="destino-tagline mb-4">
+                  Elegancia alpina en estado puro
+                </p>
+                <p class="destino-descripcion mb-4">
+                  Refugios de montaña con acceso exclusivo a pistas privadas,
+                  lagos cristalinos y experiencias gastronómicas con estrellas
+                  Michelin en los Alpes.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-skiing"></i>Estación de ski privada
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-spa"></i>Wellness alpino
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-wine-bottle"></i>Catas de vinos
+                      exclusivos
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Suiza<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destino 10: Budapest -->
+
+        <div class="destino-elegante mb-6">
+          <div class="row align-items-center g-5 flex-row-reverse">
+            <div class="col-lg-6">
+              <div class="destino-imagen" style="background-image: url('/images/destinos/budapest.jpg')">
+                <div class="prestigio-badge">ESPLENDOR IMPERIAL</div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="destino-contenido pe-lg-5">
+                <h3 class="destino-nombre mb-3 d-flex justify-content-between align-items-center">
+                  <span>Budapest</span>
+                  <span class="widget-clima-minimal" data-ciudad="Budapest"></span>
+                </h3>
+                <p class="destino-tagline mb-4">Perla del Danubio</p>
+                <p class="destino-descripcion mb-4">
+                  Capital termal de Europa con acceso VIP a baños históricos,
+                  cruceros privados al atardecer por el Danubio y cenas en
+                  palacios barrocos con vistas panorámicas.
+                </p>
+                <div class="destino-highlights mb-5">
+                  <div class="d-flex flex-column gap-2">
+                    <div class="highlight-item">
+                      <i class="fas fa-spa"></i>Spa Gellért exclusivo
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-crown"></i>Tours en palacios reales
+                    </div>
+                    <div class="highlight-item">
+                      <i class="fas fa-wine-glass"></i>Vinos de Tokaj premium
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-luxury">
+                  Explorar Budapest<i class="fas fa-chevron-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </section>
+
+      <!-- ========================== FIN DE SECCIÓN 4: NUESTROS DESTINOS EXCLUSIVOS ========================== -->
+
+      <!-- ========================== SECCIÓN 5: TABLA DE COMPARACIÓN ========================== -->
+
+      <section class="py-6 bg-light">
+        <h2 class="text-center display-4 mb-5 section-title">
+          ¿Por Qué Elegirnos?
+        </h2>
+        <h3 class="text-center display-6 mb-5 section-subtitle text-body-secondary opacity-75">
+          Donde Otros Llegan, Nosotros Sobresalimos
+        </h3>
+        <div class="container">
+          <div class="comparison-table shadow-lg">
+            <!-- Titulos de la Tabla -->
+
+            <div class="row g-0">
+              <div class="col-md-4 comparison-header bg-dark text-white">
+                <h2 class="mb-0">
+                  <i class="fas fa-list-alt me-2"></i>Características
+                </h2>
+              </div>
+              <div class="col-md-4 comparison-header bg-secondary text-white">
+                <h2 class="mb-0">
+                  <i class="fas fa-balance-scale me-2"></i>Competencia
+                </h2>
+              </div>
+              <div class="col-md-4 comparison-header text-white" style="background: var(--secondary-color)">
+                <h2 class="mb-0">
+                  <i class="fas fa-trophy me-2"></i>Nuestra Ventaja
+                </h2>
+              </div>
+            </div>
+
+            <!-- Fila 1: Características -->
+
+            <div class="row g-0 align-items-center py-3">
+              <div class="col-md-4 feature-item border-bottom h4">
+                <i class="fas fa-users fa-lg text-primary me-2"></i>Personal por
+                Huésped
+              </div>
+              <div class="col-md-4 feature-item border-bottom h4 text-muted">
+                1:3
+              </div>
+              <div class="col-md-4 feature-item border-bottom h4 text-muted">
+                1:1
+              </div>
+            </div>
+
+            <!-- Fila 2: Acceso VIP -->
+
+            <div class="row g-0 align-items-center py-3">
+              <div class="col-md-4 feature-item border-bottom h4">
+                <i class="fas fa-star fa-lg text-primary me-2"></i>Acceso VIP
+              </div>
+              <div class="col-md-4 feature-item border-bottom h4 text-muted">
+                Reserva previa
+              </div>
+              <div class="col-md-4 feature-item border-bottom h4 text-muted">
+                Acceso garantizdo
+              </div>
+            </div>
+
+            <!-- Fila 3: Traslados -->
+
+            <div class="row g-0 align-items-center py-3">
+              <div class="col-md-4 feature-item border-bottom h4">
+                <i class="fas fa-helicopter fa-lg text-primary me-2"></i>Traslados
+              </div>
+              <div class="col-md-4 feature-item border-bottom h4 text-muted">
+                Coste adicional
+              </div>
+              <div class="col-md-4 feature-item border-bottom h4 text-muted">
+                Incluido
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================== FIN DE SECCIÓN 5: TABLA DE COMPARACIÓN ========================== -->
+      <!-- ========================== SECCIÓN 6: PROPIEDADES ========================== -->
+
+      <section class="py-6 seccion-propiedades">
+        <div class="container">
+          <h2 class="text-center display-3 mb-5 section-title section-propiedades-titulo">
+            Nuestras Propiedades
+          </h2><br>
+          <h4 class="text-center text-white">
+            Descubra en el mapa dónde se encuentran nuestras propiedades exclusivas
+          </h4>
+
+          <div id="mapa-destinos" class="my-5"></div>
+
+          <div class="row align-items-stretch">
+            <!-- Columna: España -->
+
+            <div class="col-lg-6 hotel-column">
+              <div class="mb-5">
+                <h1 class="mb-4 d-flex align-items-center section-propiedades-titulo">
+                  <i class="fas fa-map-marker-alt me-3"></i>España
+                </h1>
+                <div class="hotel-list">
+                  <!-- Barcelona -->
+
+                  <div class="hotel-list-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-city me-2"></i>Barcelona
+                      </h2>
+                      <span class="badge bg-secondary">2 Hoteles</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Hotel Catalonia ★★★★
+                      </li>
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Majestic Hotel & Spa
+                        Barcelona ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Madrid -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-monument me-2"></i>Madrid
+                      </h2>
+                      <span class="badge bg-secondary">2 Hoteles</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Hotel Ritz Madrid ★★★★★
+                      </li>
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>NH Collection Madrid ★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Ibiza -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-umbrella-beach me-2"></i>Ibiza
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Ibiza Beach Hotel ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Las Palmas -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-sun me-2"></i>Las Palmas de Gran Canaria
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Santa Catalina Hotel
+                        ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Mallorca -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-palette me-2"></i>Mallorca
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Cap Rocat Mallorca ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna: Internacional -->
+
+            <div class="col-lg-6">
+              <div class="mb-5">
+                <h1 class="mb-4 d-flex align-items-center section-propiedades-titulo">
+                  <i class="fas fa-globe-americas me-3"></i>Internacional
+                </h1>
+                <div class="hotel-list">
+                  <!-- Hawaii -->
+
+                  <div class="hotel-list-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-water me-2"></i>Hawaii
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Four Seasons Resort Maui
+                        ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Miami -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-building me-2"></i>Miami
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Fontainebleau Miami Beach
+                        ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Cannes -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0"><i class="fas fa-film me-2"></i>Cannes</h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>InterContinental Carlton
+                        Cannes ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Suiza -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-mountain me-2"></i>Suiza
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Bellevue Palace Bern
+                        ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Budapest -->
+
+                  <div class="hotel-list-item mt-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h2 class="mb-0">
+                        <i class="fas fa-landmark me-2"></i>Budapest
+                      </h2>
+                      <span class="badge bg-secondary">1 Hotel</span>
+                    </div>
+                    <ul class="list-unstyled mt-2">
+                      <li>
+                        <i class="fas fa-hotel me-2"></i>Danube Royal Hotel ★★★★★
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================== FIN DE SECCIÓN 6: PROPIEDADES ========================== -->
+
+      <div id="backToTop" class="show">
+        <i class="fas fa-chevron-up"></i>
+        <!-- Icono de flecha hacia arriba -->
+      </div>
+
+      <!-- Footer -->
+
+      <%- include('../partials/footer') %>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>        
+        <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>   
+        <script src="/js/homeScript.js"></script>
+
+
+</body>
+
+</html>

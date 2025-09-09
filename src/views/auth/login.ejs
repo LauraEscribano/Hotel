@@ -1,0 +1,88 @@
+<!--views/auth/login.ejs-->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio de Sesión - Paradise Experience</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Montserrat:wght@300;400;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+
+    <%- include('../partials/header') %>
+
+        <main class="container my-5">
+            <div class="row">
+                <div class="col-lg-6 mx-auto">
+                    <h1 class="mb-4 text-center">Iniciar Sesión</h1>
+                    <p class="lead text-muted mb-4 text-center">
+                        Ingresa a tu cuenta para disfrutar de todas nuestras ofertas y
+                        servicios exclusivos.
+                    </p>
+
+                    <form id="login-form" action="/auth/login" method="POST">
+                        <input type="hidden" name="redirect" value="<%= redirect || '' %>">
+                        <!-- Nombre de Usuario -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Email:</label>
+                            <input type="email" id="username" name="email" required
+                                placeholder="Ingresa tu Email" class="form-control" />
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mb-3 position-relative">
+                            <label for="password" class="form-label">Contraseña:</label>
+                            <div class="input-group">
+                                <input type="password" id="password" name="password" required 
+                                    placeholder="Ingresa tu contraseña" class="form-control" />
+                                <button type="button" class="btn btn-outline-primary" id="togglePassword">
+                                <i class="fas fa-eye-slash" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Mensajes de error -->
+                        <% if (messages.error && messages.error.length > 0) { %>
+                            <div class="alert alert-danger text-center" role="alert">
+                              <%= messages.error[0] %>
+                            </div>
+                        <% } %>                          
+
+                        <!-- Olvidaste la contraseña -->
+                        <div class="form-group text-center my-3">
+                            <a href="/recuperar-contrasena" class="forgot-password-link">¿Olvidaste tu contraseña?</a>
+                        </div>
+
+                        <!-- Botón de inicio de sesión -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary px-5 py-3">
+                                Iniciar Sesión
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="form-group text-center mt-3">
+                        <p>
+                            No tienes una cuenta?
+                            <a href="/auth/register" class="signup-link">Regístrate aquí</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('../partials/footer') %>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="/js/loginScript.js"></script>
+</body>
+
+</html>

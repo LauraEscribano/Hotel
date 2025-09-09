@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoteles | Admin</title>
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- DataTables Bootstrap 5 -->
+    <link href="https://cdn.datatables.net/v/bs5/dt-1.13.8/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+    <%- include('../partials/adminPanel') %>
+
+        <main class="container-xxl pt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="h3 m-0"><i class="fas fa-hotel me-2"></i>Hoteles</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hotelModal">
+                    <i class="fas fa-plus me-1"></i>Nuevo hotel
+                </button>
+            </div>
+
+            <table id="tblHotels" class="table table-striped table-bordered w-100">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Estrellas</th>
+                        <th>Ciudad</th>
+                        <th>País</th>                        
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% hotels.forEach((h, i)=> { %>
+                        <tr>
+                            <td>
+                                <%= i+1 %>
+                            </td>
+                            <td>
+                                <%= h.nomHotel || '—' %>
+                            </td>
+                            <td>
+                                <%= h.estrelles ?? '—' %>
+                            </td>
+                            <td>
+                                <%= h.ciutat || '—' %>
+                            </td>                           
+                            <!-- País (viene de la relación dentro de provincies) -->
+                            <td data-pais-id="<%= h.idPais %>">
+                                <%= h.paisos?.pais || '—' %>
+                              </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-outline-primary btn-edit" data-id="<%= h.idHotel %>">
+                                    <i class="fas fa-edit"></i>
+                                </button>                                
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </main>
+
+        <!-- Modal Nuevo / Editar Hotel -->
+        <div class="modal fade" id="hotelModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <form id="frmHotel" class="modal-content">
+                    <input type="hidden" name="idHotel" id="idHotel">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Nuevo hotel</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="hotelAlert"></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre *</label>
+                                <input type="text" name="nomHotel" class="form-control" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Estrellas</label>
+                                <input type="number" name="estrelles" min="0" max="5" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" name="ciutat" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">País</label>
+                                <select name="idPais" class="form-select">
+                                    <option value="">— Selecciona país —</option>
+                                    <% countries.forEach(c=>{ %>
+                                        <option value="<%= c.idPais %>">
+                                            <%= c.pais %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnSaveHotel" type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <%- include('../partials/footer') %>
+            <!-- ========= JS (orden correcto) ========= -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- jQuery -->
+            <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+            <!-- DataTables núcleo + Bootstrap 5 skin -->
+            <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+            <script>
+                // 1) Inicializar DataTable sobre la tabla de hoteles
+                const dt = new DataTable('#tblHotels', {
+                  language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
+                  }
+                  // Si quieres centrar columnas, usa createdRow y jQuery como en clientes
+                });
+              
+                // 2) Referencias al modal y al formulario
+                const hotelModal = document.getElementById('hotelModal');
+                const frmHotel   = document.getElementById('frmHotel');
+                const bsHotel    = new bootstrap.Modal(hotelModal);
+                const alertDiv   = document.getElementById('hotelAlert');
+              
+                // 3) Nuevo hotel: limpiar form y modo
+                document.querySelector('[data-bs-target="#hotelModal"]').addEventListener('click', () => {
+                  frmHotel.reset();
+                  frmHotel.idHotel.value = '';
+                  frmHotel.dataset.mode  = 'create';
+                  hotelModal.querySelector('.modal-title').textContent = 'Nuevo hotel';
+                  alertDiv.innerHTML = '';
+                });
+              
+                // 4) Editar hotel: delegación en la tabla
+                document.getElementById('tblHotels').addEventListener('click', e => {
+                  const btn = e.target.closest('.btn-edit');
+                  if (!btn) return;
+                  const row   = btn.closest('tr');
+                  const cells = row.children;
+              
+                  // Rellenar los campos según el orden de columnas:
+                  frmHotel.idHotel.value   = btn.dataset.id;
+                  frmHotel.nomHotel.value  = cells[1].textContent.trim() === '—' ? '' : cells[1].textContent.trim();
+                  frmHotel.estrelles.value = cells[2].textContent.trim() === '—' ? '' : cells[2].textContent.trim();
+                  frmHotel.ciutat.value    = cells[3].textContent.trim() === '—' ? '' : cells[3].textContent.trim();
+                  // País (columna 5) y Provincia (columna 4) si existiesen:
+                  frmHotel.idPais.value      = cells[4].dataset.paisId || '';
+                  // Si quitas provincia, actualiza índice accordingly:
+                  // frmHotel.idProvincia.value = cells[5].dataset.provinciaId || '';
+              
+                  frmHotel.dataset.mode = 'edit';
+                  hotelModal.querySelector('.modal-title').textContent = 'Editar hotel';
+                  alertDiv.innerHTML = '';
+                  bsHotel.show();
+                });
+              
+                // 5) Enviar crear o editar
+                frmHotel.addEventListener('submit', async evt => {
+                  evt.preventDefault();
+                  alertDiv.innerHTML = '';
+              
+                  const data = Object.fromEntries(new FormData(frmHotel).entries());
+                  const mode = frmHotel.dataset.mode;
+                  const id   = data.idHotel;
+              
+                  // Ajustar rutas para hoteles
+                  const url    = mode === 'edit'
+                    ? `/admin/hotels/${id}`
+                    : '/admin/hotels';
+                  const method = mode === 'edit' ? 'PUT' : 'POST';
+              
+                  try {
+                    const res = await fetch(url, {
+                      method,
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(data)
+                    });
+              
+                    if (!res.ok) {
+                      const { error } = await res.json();
+                      alertDiv.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                          ${error}
+                        </div>`;
+                      return;
+                    }
+              
+                    // 6) Éxito: obtenemos el hotel completo
+                    const h = await res.json();
+              
+                    // Construir botones de acciones
+                    const editBtn = `
+                      <button class="btn btn-sm btn-outline-primary btn-edit"
+                              data-id="${h.idHotel}">
+                        <i class="fas fa-edit"></i>
+                      </button>`;
+              
+                    const deleteBtn = `
+                      <button class="btn btn-sm btn-outline-danger btn-delete"
+                              data-id="${h.idHotel}">
+                        <i class="fas fa-trash"></i>
+                      </button>`;
+              
+                    if (mode === 'create') {
+                      // Añadir nueva fila
+                      dt.row.add([
+                        dt.rows().count() + 1,
+                        h.nomHotel || '—',
+                        h.estrelles ?? '—',
+                        h.ciutat || '—',
+                        h.paisos?.pais || '—',
+                        // si quitaste provincia, omite esta celda
+                        // h.provincies?.provincia || '—',
+                        `${editBtn}${deleteBtn}`
+                      ]).draw(false);
+              
+                      // Mostrar mensaje y reset para 'Crear otro'
+                      alertDiv.innerHTML = `
+                        <div class="alert alert-success d-flex justify-content-between align-items-center">
+                          Hotel creado correctamente.
+                          <button id="btnNewHotel" class="btn btn-sm btn-link">Crear otro</button>
+                        </div>`;
+                      frmHotel.reset();
+                      frmHotel.idHotel.value = '';
+                      frmHotel.dataset.mode  = 'create';
+              
+                      document.getElementById('btnNewHotel').addEventListener('click', () => {
+                        alertDiv.innerHTML = '';
+                        frmHotel.reset();
+                      });
+              
+                    } else {
+                      // Editar fila existente
+                      const btnEd = [...document.querySelectorAll('.btn-edit')]
+                        .find(b => b.dataset.id == id);
+                      const row = btnEd.closest('tr');
+                      const cells = row.children;
+              
+                      cells[1].textContent = h.nomHotel ?? '—';
+                      cells[2].textContent = h.estrelles  ?? '—';
+                      cells[3].textContent = h.ciutat     ?? '—';
+                      cells[4].textContent = h.paisos?.pais ?? '—';
+                      // si quitaste provincia, no actualices esa celda
+              
+                      alertDiv.innerHTML = `
+                        <div class="alert alert-success" role="alert">
+                          Hotel actualizado correctamente.
+                        </div>`;
+                    }
+              
+                    // No cerramos el modal automáticamente
+                  } catch (err) {
+                    alertDiv.innerHTML = `
+                      <div class="alert alert-danger" role="alert">
+                        ${err.message}
+                      </div>`;
+                  }
+                });
+              
+                // 7) Limpieza al cerrar
+                hotelModal.addEventListener('hidden.bs.modal', () => {
+                  alertDiv.innerHTML = '';
+                });
+              
+                // 8) (Opcional) Borrar hotel con Ajax-DELETE igual que clientes
+                document.getElementById('tblHotels').addEventListener('click', async e => {
+                  const btn = e.target.closest('.btn-delete');
+                  if (!btn) return;
+                  // implementa aquí tu confirm y DELETE /admin/hotels/:idHotel
+                });
+              
+              </script>
+              
+
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<header>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/home">
+                <span class="paradise-text">P</span>aradise
+                <span class="paradise-text">E</span>xperience
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="/home">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Habitacion/habitacion.html">Habitaciones</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Servicios/servicios.html">Experiencias</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Contacto/contacto.html">Contacto</a></li>
+                    <li class="nav-item"><a class="nav-link" href="FAQ/preguntas.html">FAQ</a></li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe"></i> ES
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                            <li><a class="dropdown-item" href="#" lang="en">EN</a></li>
+                            <li><a class="dropdown-item" href="#" lang="fr">FR</a></li>
+                            <li><a class="dropdown-item" href="#" lang="es">ES</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+
+                            <% if (!user) { %>
+                              <!-- No hay usuario -->
+                              <li><a class="dropdown-item" href="/auth/login">Iniciar Sesión</a></li>
+                              <li><a class="dropdown-item" href="/auth/register">Registrarse</a></li>
+                              <li><hr class="dropdown-divider"></li>
+                            <% } else { %>
+                              <!-- Usuario logeado -->  
+                              <% if (user.rol === 'usuari') { %>
+                                <li>
+                                  <a class="dropdown-item" href="/user/profile#perfil">
+                                    <i class="fas fa-user me-1"></i>Mi Perfil
+                                  </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/user/profile#reservas-activas">
+                                      <i class="fas fa-calendar-check me-1"></i>Mis Reservas
+                                    </a>
+                                </li>
+                              <% } else if (user.rol === 'administrador') { %>
+                                <li>
+                                  <a class="dropdown-item" href="/admin/dashboard">
+                                    <i class="fas fa-cog me-1"></i>Administrador
+                                  </a>
+                                </li>
+                              <% } %>                          
+                              <li><hr class="dropdown-divider"></li>
+                              <li>
+                                <a class="dropdown-item text-danger" href="/auth/logout">
+                                  <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                                </a>
+                              </li>
+                            <% } %>
+                          
+                          </ul>
+                          
+                    </li>
+                </ul>             
+            </div>
+        </div>
+    </nav>    
+</header>

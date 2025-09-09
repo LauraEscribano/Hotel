@@ -1,0 +1,575 @@
+:root {
+  --primary-color: #040508;
+  --secondary-color: #c0a080;
+  --tertiary-color: #f5f5f5;
+  --accent-color: #8b0000;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --light-bg: #fafafa;
+  --gold-gradient: linear-gradient(135deg, #c9a227, #e6c875);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+body {
+  background-color: var(--light-bg);
+  color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1 0 auto;
+  padding-top: 200px;
+}
+
+.hotel-header {
+  min-height: 80px !important;
+  height: auto !important;
+  padding: 1rem 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  background: linear-gradient(45deg, #1a1a2e, #16213e) !important;
+  color: white !important;
+  border-radius: 10px 10px 0 0 !important;
+  box-shadow: var(--shadow-sm) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.hotel-header > div {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.hotel-header h2 {
+  font-size: 2.35rem !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.3 !important;
+}
+
+.star-rating {
+  font-size: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Badge de localización más compacto */
+.hotel-header .badge {
+  padding: 0.25rem 0.5rem !important;
+  font-size: 1rem !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Pseudo-elemento decorativo ajustado */
+.hotel-header::before {
+  width: 100px !important;
+  height: 100px !important;
+  top: -30px !important;
+  right: -30px !important;
+}
+
+.star-rating {
+  font-size: 1.2rem;
+  color: var(--secondary-color);
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+/* Tarjeta de habitación rediseñada - LADO A LADO */
+.room-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 10px;
+  background-color: var(--bg-white);
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+
+/* Contenedor del carrusel (lado izquierdo) */
+.room-media {
+  position: relative;
+  width: 50%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.room-carousel {
+  height: 100%;
+}
+
+.carousel-item img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+/* Estilos para los botones (ocultos por defecto) */
+.carousel-control-prev,
+.carousel-control-next {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%) scale(0.5); /* Estado inicial */
+  opacity: 0; /* Inicialmente transparentes */
+  transition: opacity 0.3s ease; /* Transición suave */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  z-index: 10; /* Asegura que estén sobre las imágenes */
+  overflow: hidden;
+}
+
+/* -- Estilos base de los botones (ocultos y pequeños) -- */
+.carousel-control-prev,
+.carousel-control-next {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.5); /* Estado inicial: pequeño y transparente */
+  transition: all 0.5s ease; /* Transición para opacity y transform */
+}
+
+.carousel-control-prev { left: 15px; }
+.carousel-control-next { right: 15px; }
+
+/* -- Al hacer hover en el contenedor, animar a tamaño normal -- */
+.room-media:hover .carousel-control-prev,
+.room-media:hover .carousel-control-next {
+  opacity: 1;
+  transform: translateY(-50%) scale(1); /* Escala final */
+}
+
+/* -- Asegurar que la transición inversa ocurra al quitar el hover -- */
+.room-media:not(:hover) .carousel-control-prev,
+.room-media:not(:hover) .carousel-control-next {
+  transition: all 0.5s ease; /* Forzar la misma transición al salir */
+}
+
+/* Estilo de los íconos (flechas) */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1); /* Flechas negras (contraste) */
+  width: 20px;
+  height: 20px;
+}
+
+/* Contenedor de la información (lado derecho) */
+.room-content {
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Etiqueta de precio elegante */
+.room-price-tag {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 20px;
+  right: 20px;
+  background: var(--bg-white);
+  color: var(--primary-color);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.3rem;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  overflow: hidden;
+  border: 2px solid var(--secondary-color);
+  font-family: "Georgia", serif;
+  transition: all 0.3s ease;
+}
+
+/* Efecto de cinta decorativa */
+.room-price-tag::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 30px;
+  height: 30px;
+  background: var(--gold-gradient);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+/* Detalle de cinta */
+.room-price-tag::after {
+  content: "★";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  color: var(--bg-white);
+  font-size: 0.7rem;
+}
+
+.price-per-night {
+  font-size: 0.7rem;
+  color: var(--secondary-color);
+  font-style: italic;
+  font-weight: 900;
+}
+
+/* Contenido de la habitación */
+.room-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.room-name {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+}
+
+/* Especificaciones */
+.room-specs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  margin: 1.5rem 0;
+  flex-grow: 1;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.spec-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.spec-label {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  line-height: 1.2;
+}
+
+.spec-value {
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+/* Botón de reserva */
+.btn-reserve {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 30px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  align-self: flex-end;
+}
+
+.btn-reserve:hover {
+  background: var(--secondary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-reserve i {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.btn-reserve:hover i {
+  transform: translateX(3px);
+}
+
+/* Progress Steps - Versión Corregida */
+.booking-progress {
+  width: 100%;
+  margin: 3rem 0;
+  position: relative;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  padding: 0 50px;
+  /* Añadido padding para compensar */
+  box-sizing: border-box;
+}
+
+/* Línea conectora - Ahora perfectamente alineada */
+.progress-steps::before {
+  content: "";
+  position: absolute;
+  top: 21px;
+  /* Mitad de la altura del círculo (42px/2) */
+  left: 50px;
+  right: 50px;
+  height: 3px;
+  background-color: var(--primary-color);
+  z-index: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.step-number {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: var(--bg-light);
+  color: var(--primary-color);
+  border: 3px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.step-title {
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+  font-weight: 500;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 5px;
+}
+
+/* Estados */
+/* Completed steps */
+.step.completed .step-number {
+  background-color: var(--primary-color);
+  color: var(--bg-light);
+  border-color: var(--primary-color);
+}
+
+.step.completed .step-title {
+  color: var(--primary-color);
+}
+
+/* Active step */
+.step.active .step-number {
+  background-color: var(--secondary-color);
+  color: var(--bg-light);
+  border-color: var(--secondary-color);
+}
+
+.step.active .step-title {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Hover effect on the entire progress-steps */
+.progress-steps:hover .step:not(.completed):not(.active) .step-number {
+  background-color: var(--tertiary-color);
+}
+
+/* Barra de progreso activa */
+.progress-bar {
+  position: absolute;
+  top: 21px;
+  left: 50px;
+  height: 3px;
+  background: var(--secondary-color);
+  z-index: 1;
+  width: 33%;
+  transition: width 0.4s ease;
+}
+
+/* Botón volver */
+.btn-volver {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 15px;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Mensajes de alerta */
+.alert-danger {
+  background-color: rgba(139, 0, 0, 0.1);
+  border-color: rgba(139, 0, 0, 0.2);
+  color: var(--accent-color);
+}
+
+/* Añadir box-sizing general */
+
+.room-card {
+  height: auto; /* Altura automática según contenido */
+  align-items: stretch; /* Igualar alturas de los hijos */
+}
+
+.room-media {
+  width: 50%;
+  padding: 0; /* Eliminar padding interno */
+  height: auto; /* Altura automática */
+  min-height: 400px; /* Altura mínima base */
+}
+
+.room-content {
+  width: 50%;
+  padding: 1.5rem; /* Reducir padding */
+  position: relative;
+}
+
+/* Asegurar que el carrusel llene todo el espacio */
+.carousel-inner,
+.carousel-item,
+.carousel-item img {
+  height: 100%;
+  min-height: 400px;
+  object-fit: cover;
+}
+
+/* Ajustar posición del precio */
+.room-price-tag {
+  top: 15px;
+  right: 15px;
+  width: 70px;
+  height: 70px;
+  font-size: 1.1rem;
+}
+
+/* Mantener relación de aspecto en imágenes */
+.room-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Etiqueta de categoría */
+.room-category-tag {
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem 1.5rem !important;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Botón de reserva */
+.btn-reserve-elegant {
+  background: linear-gradient(45deg, #1a1a2e, #16213e);
+  color: white !important;
+  border: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto hover del botón */
+.btn-reserve-elegant:hover {
+  background: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
+  box-shadow: 0 5px 15px rgba(192, 160, 128, 0.3);
+}
+
+.room-category-tag {
+  color: var(--secondary-color);
+  background: var(--primary-color);
+  padding: 0.3rem 1rem;
+  border: 1px solid var(--secondary-color);
+}
+
+.room-name {
+  color: var(--primary-color) !important;
+  font-weight: 200;
+}
+
+.per-night-price {
+  border-bottom: 2px solid var(--secondary-color);
+  padding-bottom: 0.5rem;
+}
+
+.price-amount {
+  color: var(--primary-color);
+}
+
+.price-label {
+  color: var(--secondary-color);
+}
+
+.spec-item {
+  border-bottom: 1px dashed rgba(192, 160, 128, 0.3);
+  padding-bottom: 0.8rem;
+}
+
+.spec-item i {
+  width: 24px;
+  color: var(--secondary-color);
+}
+
+.spec-item span {
+  color: var(--primary-color);
+}
+
+.total-price-highlight {
+  border-left: 4px solid var(--secondary-color);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.total-price {
+  text-align: right;
+}
+
+.price-display {
+  font-size: 2.5rem;
+  margin-bottom: 0;
+}
+
+.small {
+  font-size: 0.875rem;
+}
+
+.text-end {
+  text-align: right;
+}

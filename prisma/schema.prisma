@@ -1,0 +1,222 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model categories {
+  idCategoria      Int                @id @default(autoincrement())
+  nomCategoria     String             @db.VarChar(100)
+  descripcio       String?            @db.Text
+  habitacions      habitacions[]
+  imatgesCategoria imatgesCategoria[]
+  tarifes          tarifes[]
+}
+
+model clients {
+  idClient           Int         @id @default(autoincrement())
+  nom                String      @db.VarChar(50)
+  cognoms            String      @db.VarChar(100)
+  data_naixement     DateTime?   @db.Date
+  dni                String?     @unique(map: "uk_dni") @db.VarChar(15)
+  email              String?     @db.VarChar(254)
+  telefon            String?     @db.VarChar(20)
+  carrer             String?     @db.VarChar(100)
+  numero             String?     @db.VarChar(10)
+  pis                String?     @db.VarChar(10)
+  ciutat             String?     @db.VarChar(100)
+  idPais             Int?
+  idProvincia        Int?
+  codi_postal        String?     @db.VarChar(10)
+  data_actualitzacio DateTime?   @default(now()) @db.Timestamp(0)
+  actiu              Boolean?    @default(true)
+  paisos             paisos?     @relation(fields: [idPais], references: [idPais], map: "fk_clients_paisos")
+  provincies         provincies? @relation(fields: [idPais, idProvincia], references: [idPais, idProvincia], map: "fk_clients_provincies")
+  reserves           reserves[]
+  usuaris            usuaris[]
+
+  @@index([idPais, idProvincia], map: "fk_clients_provincies")
+}
+
+model habitacions {
+  idHotel         Int
+  numeroHabitacio Int
+  nomHabitacio    String?       @db.VarChar(100)
+  capacitat       Int?
+  idCategoria     Int
+  categories      categories    @relation(fields: [idCategoria], references: [idCategoria], onDelete: Cascade, map: "fk_habitacions_2")
+  hotels          hotels        @relation(fields: [idHotel], references: [idHotel], onDelete: Cascade, map: "habitacions_ibfk_1")
+  reserveshab     reserveshab[]
+
+  @@id([idHotel, numeroHabitacio])
+  @@index([idCategoria], map: "fk_habitacions_2_idx")
+}
+
+model hotels {
+  idHotel          Int                @id @default(autoincrement())
+  nomHotel         String?            @db.VarChar(45)
+  estrelles        Int?
+  idPais           Int?
+  idProvincia      Int?
+  ciutat           String?            @db.VarChar(100)
+  habitacions      habitacions[]
+  provincies       provincies?        @relation(fields: [idPais, idProvincia], references: [idPais, idProvincia], map: "fk2")
+  paisos           paisos?            @relation(fields: [idPais], references: [idPais], map: "fk_hotels_paisos")
+  imatgesCategoria imatgesCategoria[]
+  reserves         reserves[]
+  serveishotels    serveishotels[]
+  tarifes          tarifes[]
+
+  @@index([idPais, idProvincia], map: "fk2_idx")
+}
+
+model paisos {
+  idPais        Int          @id @default(autoincrement())
+  pais          String       @db.VarChar(50)
+  pais_original String       @db.VarChar(50)
+  clients       clients[]
+  hotels        hotels[]
+  provincies    provincies[]
+}
+
+model provincies {
+  idProvincia Int       @id @default(autoincrement())
+  idPais      Int
+  provincia   String    @db.VarChar(100)
+  clients     clients[]
+  hotels      hotels[]
+  paisos      paisos    @relation(fields: [idPais], references: [idPais], onDelete: Cascade, map: "provincies_ibfk_1")
+
+  @@unique([idPais, idProvincia], map: "uk_provincia_pais")
+  @@index([idPais], map: "idx_idPais")
+}
+
+model reserves {
+  idHotel         Int
+  numReserva      Int
+  idClient        Int?
+  dataInici       DateTime?         @db.Date
+  dataFi          DateTime?         @db.Date
+  codiReserva     String?           @unique(map: "codiReserva") @db.VarChar(20)
+  hotels          hotels            @relation(fields: [idHotel], references: [idHotel], onDelete: Cascade, map: "fk_Reserva_1")
+  clients         clients?          @relation(fields: [idClient], references: [idClient], map: "fk_Reserva_2")
+  reserveshab     reserveshab[]
+  reservesserveis reservesserveis[]
+
+  @@id([idHotel, numReserva])
+  @@index([idClient], map: "fk_Reserva_2_idx")
+}
+
+model reserveshab {
+  idHotel      Int
+  numReserva   Int
+  numHabitacio Int
+  persones     Int?
+  habitacions  habitacions @relation(fields: [idHotel, numHabitacio], references: [idHotel, numeroHabitacio], onDelete: Cascade, map: "fk_detall_1")
+  reserves     reserves    @relation(fields: [idHotel, numReserva], references: [idHotel, numReserva], onDelete: Cascade, map: "fk_detall_2")
+
+  @@id([idHotel, numReserva, numHabitacio])
+  @@index([idHotel, numHabitacio], map: "fk_detall_1_idx")
+}
+
+model reservesserveis {
+  idReservaServei Int           @id @default(autoincrement())
+  idHotel         Int
+  numReserva      Int
+  idServei        Int
+  dia             DateTime?     @db.Date
+  quantitat       Int?          @default(1)
+  observacions    String?       @db.VarChar(100)
+  serveishotels   serveishotels @relation(fields: [idHotel, idServei], references: [idHotel, idServei], onDelete: Cascade, map: "fk_reserserv_1")
+  reserves        reserves      @relation(fields: [idHotel, numReserva], references: [idHotel, numReserva], onDelete: Cascade, map: "fk_reserserv_2")
+
+  @@index([idHotel, numReserva], map: "idx_hotel_numReserva")
+  @@index([idHotel, idServei], map: "idx_hotel_servei")
+}
+
+model serveis {
+  idServei      Int             @id @default(autoincrement())
+  nomServei     String          @db.VarChar(100)
+  descripcio    String?         @db.Text
+  disponible    Boolean?        @default(true)
+  serveishotels serveishotels[]
+}
+
+model serveishotels {
+  idHotel         Int
+  idServei        Int
+  preu            Decimal?          @default(0.00) @db.Decimal(10, 2)
+  disponible      Boolean?          @default(true)
+  reservesserveis reservesserveis[]
+  hotels          hotels            @relation(fields: [idHotel], references: [idHotel], onDelete: Cascade, map: "fk_s_1")
+  serveis         serveis           @relation(fields: [idServei], references: [idServei], onDelete: Cascade, map: "fk_s_2")
+
+  @@id([idHotel, idServei])
+  @@index([idServei], map: "fk_s_2_idx")
+}
+
+model tarifes {
+  idHotel     Int
+  idCategoria Int
+  idTemporada Int
+  preu        Decimal    @db.Decimal(10, 2)
+  hotels      hotels     @relation(fields: [idHotel], references: [idHotel], onDelete: Cascade, map: "tarifes_ibfk_1")
+  categories  categories @relation(fields: [idCategoria], references: [idCategoria], onDelete: Cascade, map: "tarifes_ibfk_2")
+  temporades  temporades @relation(fields: [idTemporada], references: [idTemporada], onDelete: Cascade, map: "tarifes_ibfk_3")
+
+  @@id([idHotel, idCategoria, idTemporada])
+  @@index([idCategoria], map: "idCategoria")
+  @@index([idTemporada], map: "idTemporada")
+}
+
+model temporades {
+  idTemporada Int            @id @default(autoincrement())
+  nom         temporades_nom
+  dataInici   DateTime       @db.Date
+  dataFi      DateTime       @db.Date
+  tarifes     tarifes[]
+}
+
+model usuaris {
+  idUsuari     Int         @id @default(autoincrement())
+  idClient     Int?
+  username     String?     @unique(map: "username_UNIQUE") @db.VarChar(50)
+  password     String      @db.VarChar(100)
+  email        String      @unique(map: "email_UNIQUE") @db.VarChar(100)
+  rol          usuaris_rol @default(usuari)
+  actiu        Boolean?    @default(true)
+  deleted_at   DateTime?   @db.DateTime(0)
+  data_creacio DateTime?   @default(now()) @db.Timestamp(0)
+  clients      clients?    @relation(fields: [idClient], references: [idClient], map: "fk_usuaris_client")
+
+  @@index([idClient], map: "fk_usuaris_client")
+}
+
+model imatgesCategoria {
+  idImatge    Int        @id @default(autoincrement())
+  idHotel     Int
+  idCategoria Int
+  rutaImatge  String     @db.VarChar(255)
+  descripcio  String?    @db.VarChar(255)
+  ordreImatge Int?
+  hotels      hotels     @relation(fields: [idHotel], references: [idHotel], onDelete: Cascade, map: "imatgesCategoria_ibfk_1")
+  categories  categories @relation(fields: [idCategoria], references: [idCategoria], onDelete: Cascade, map: "imatgesCategoria_ibfk_2")
+
+  @@index([idCategoria], map: "idCategoria")
+  @@index([idHotel, idCategoria], map: "idx_hotel_categoria")
+}
+
+enum temporades_nom {
+  baja
+  media
+  alta
+}
+
+enum usuaris_rol {
+  usuari
+  administrador
+}

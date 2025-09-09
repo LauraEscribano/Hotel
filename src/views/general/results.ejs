@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultados de Búsqueda</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/habitaciones.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+
+  <%- include('../partials/header') %>
+
+    <div class="main-content">
+      <div class="container mt-4">
+
+    <!-- ========================== SECCIÓN 1: BARRA DE PROGRESO ========================== -->
+
+      <div class="booking-progress">
+          <div class="row">
+            <div class="col-12">
+              <div class="progress-steps">
+                <div class="progress-bar"></div>
+                <div class="step active">
+                  <span class="step-number">1</span>
+                  <span class="step-title">Selección de Habitación</span>
+                </div>
+                <div class="step">
+                  <span class="step-number">2</span>
+                  <span class="step-title">Datos del Cliente</span>
+                </div>
+                <div class="step">
+                  <span class="step-number">3</span>
+                  <span class="step-title">Confirmación de Reserva</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <!-- ========================== FIN DE SECCIÓN 1: BARRA DE PROGRESO ========================== -->
+
+    <!-- ========================== SECCIÓN 2: RESULTADOS DE LA BÚSQUEDA ========================== -->
+
+        <!-- Título principal -->
+
+        <div class="text-center mb-5">
+          <h1 class="display-5 fw-bold">
+            <i class="fas fa-search me-2"></i>Resultados de Búsqueda
+          </h1>
+          <p class="lead text-muted">Encuentra la habitación perfecta para tu estancia</p>
+        </div>
+
+        <!-- Botón volver -->
+
+        <div class="mb-4">
+          <a href="javascript:history.back()" class="btn btn-volver">
+            <i class="fas fa-arrow-left me-2"></i>
+            Volver atrás
+          </a>
+        </div>
+
+    <!-- ========================== SECCIÓN 2.1: RESULTADOS DE LA BÚSQUEDA POR HOTEL ========================== -->
+
+
+        <% if (type==='hotel' ) { %>
+          <% if (rooms.length===0) { %>
+            <div class="alert alert-danger text-center py-4">
+              <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+              <h4 class="alert-heading">No hay disponibilidad</h4>
+              <p>No se encontraron habitaciones disponibles para este hotel en las fechas seleccionadas.</p>
+              <hr>
+              <a href="/home" class="btn btn-outline-danger">Buscar otros hoteles</a>
+            </div>
+            <% } else { %>
+              <div class="row">
+                <% rooms.forEach((room, index)=> { %>
+                  <div class="col-12 mb-4">
+                    <div class="room-card">
+                      
+                      <!-- Carrusel de imágenes (lado izquierdo) -->
+
+                      <div class="room-media">
+                        <div id="carouselRoom<%= index %>" class="carousel slide room-carousel" data-bs-ride="false">
+                          <div class="carousel-inner h-100">
+                            <% if (room.images && room.images.length> 0) { %>
+                              <% room.images.forEach((image, imgIndex)=> { %>
+                                <div class="carousel-item h-100 <%= imgIndex === 0 ? 'active' : '' %>">
+                                  <img src="<%= image.rutaImatge %>" alt="Imagen de la habitación"
+                                    class="d-block w-100">
+                                </div>
+                                <% }); %>
+                                  <% } else { %>
+                                    <div class="carousel-item active h-100">
+                                      <img src="https://via.placeholder.com/800x600?text=Habitación+Hotel"
+                                        alt="Imagen genérica" class="d-block w-100">
+                                    </div>
+                                    <% } %>
+                          </div>
+                          <% if (room.images && room.images.length> 1) { %>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselRoom<%= index %>" data-bs-slide="prev">
+                              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                              <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselRoom<%= index %>" data-bs-slide="next">
+                              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                              <span class="visually-hidden">Siguiente</span>
+                            </button>
+                            <% } %>
+                        </div>
+                      </div>
+
+                      <!-- Contenido de la habitación (lado derecho) -->
+
+                      <div class="room-content elegant-hotel-design">
+
+                        <!-- Encabezado -->
+
+                        <div class="room-header mb-4">
+                          <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                              <div class="category-container mb-2">
+                                <span class="room-category-tag text-uppercase letter-spacing-1 fw-bold"><%= room.nomCategoria %></span>
+                              </div><br>
+                              <h2 class="room-name mb-0 text-primary">
+                                <%= room.nomHabitacio || 'Suite Premium' %>
+                              </h2>
+                            </div>
+                            <div class="text-end">
+                              <div class="per-night-price">
+                                <span class="price-amount h4">
+                                  <%= room.preuPerNit ? `${room.preuPerNit}€` : 'Consultar' %>
+                                </span>
+                                <span class="price-label small d-block">por noche</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>                       
+
+                        <!-- Especificaciones -->
+
+                        <div class="room-specs mb-4">
+                          <div class="spec-item d-flex align-items-center mb-3">
+                            <i class="fas fa-user-friends me-3"></i>
+                            <span class="small">Capacidad para <%= room.capacitat || 'N/A' %> personas</span>
+                          </div>
+                        </div>
+                        
+
+                        <!-- Sección de precio total -->
+
+                        <div class="total-price-highlight p-4 mb-4">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <div class="small mb-1">Estancia de <%= room.nights %> noches</div>
+                              <div class="small">
+                                <%= room.roomsRequested %> habitación(es)
+                              </div>
+                            </div>
+                            <div class="text-end">
+                              <div class="total-price">
+                                <div class="small">Total</div>
+                                <div class="price-display h1 mb-0">
+                                  <%= room.totalPrice.toFixed(2) %>€
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+
+                        <!-- Botón de reserva -->
+
+                        <a href="/reservation/select?hotelId=<%= room.idHotel %>&idCategoria=<%= room.idCategoria %>&nomCategoria=<%= encodeURIComponent(room.nomCategoria) %>&checkIn=<%= encodeURIComponent(checkIn) %>&checkOut=<%= encodeURIComponent(checkOut) %>&rooms=<%= room.roomsRequested %>&guests=<%= encodeURIComponent(requiredCapacity) %>&nights=<%= room.nights %>&totalPrice=<%= room.totalPrice %>"
+                          class="btn btn-primary btn-reserva">
+                          <i class="fas fa-check-circle me-2"></i>
+                          Reservar Ahora
+                          </a>
+                      </div>
+                    </div>
+                  </div>
+                  <% }); %>
+              </div>
+              <% } %>
+              
+    <!-- ========================== FIN DE SECCIÓN 2.1: RESULTADOS DE LA BÚSQUEDA POR HOTEL ========================== -->
+
+    <!-- ========================== SECCIÓN 2.2: RESULTADOS DE LA BÚSQUEDA POR CIUDAD ========================== -->
+
+                <% } else if (type==='city' ) { %>
+                  <% if (hotels.length===0) { %>
+                    <div class="alert alert-danger text-center py-4">
+                      <i class="fas fa-map-marker-alt fa-2x mb-3"></i>
+                      <h4 class="alert-heading">No hay hoteles disponibles</h4>
+                      <p>No se encontraron hoteles en <%= city %> para las fechas seleccionadas.</p>
+                      <hr>
+                      <a href="/home" class="btn btn-outline-danger">Buscar en otra ciudad</a>
+                    </div>
+                    <% } else { %>
+                      <% hotels.forEach(hotel=> { %>
+                        <div class="hotel-group mb-5">
+
+                          <!-- Encabezado del hotel -->
+
+                          <div class="hotel-header">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                              <div>
+                                <h2 class="mb-1">
+                                  <i class="fas fa-hotel me-2"></i>
+                                  <%= hotel.nomHotel %>
+                                </h2>
+                                
+                                <div class="star-rating mb-2 mb-md-0">
+                                  <% for (let i = 0; i < 5; i++) { %>
+                                    <% if (i < hotel.estrelles) { %>
+                                      <i class="fas fa-star"></i>
+                                    <% } else { %>
+                                      <i class="far fa-star"></i>
+                                    <% } %>
+                                  <% } %>
+                                </div>
+                                
+                              </div>
+                              <div class="text-md-end">
+                                <span class="badge bg-light text-dark">
+                                  <i class="fas fa-map-marker-alt me-1"></i>
+                                  <%= city %>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Habitaciones del hotel -->
+
+                          <% if (hotel.rooms && hotel.rooms.length> 0) { %>
+                            <div class="row mt-3">
+                              <% hotel.rooms.forEach((room, index)=> { %>
+                                <div class="col-12 mb-4">
+                                  <div class="room-card">
+
+                                    <!-- Carrusel de imágenes (lado izquierdo) -->
+
+                                    <div class="room-media">
+                                      <div id="carouselHotel<%= hotel.idHotel %>Room<%= index %>"
+                                        class="carousel slide room-carousel" data-bs-ride="false">
+                                        <div class="carousel-inner h-100">
+                                          <% if (room.images && room.images.length> 0) { %>
+                                            <% room.images.forEach((image, imgIndex)=> { %>
+                                              <div class="carousel-item h-100 <%= imgIndex === 0 ? 'active' : '' %>">
+                                                <img src="<%= image.rutaImatge %>" alt="Imagen de la habitación"
+                                                  class="d-block w-100">
+                                              </div>
+                                              <% }); %>
+                                                <% } else { %>
+                                                  <div class="carousel-item active h-100">
+                                                    <img src="https://via.placeholder.com/800x600?text=Habitación+Hotel"
+                                                      alt="Imagen genérica" class="d-block w-100">
+                                                  </div>
+                                                  <% } %>
+                                        </div>
+                                        <% if (room.images && room.images.length> 1) { %>
+                                          <button class="carousel-control-prev" type="button"
+                                            data-bs-target="#carouselHotel<%= hotel.idHotel %>Room<%= index %>"
+                                            data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Anterior</span>
+                                          </button>
+                                          <button class="carousel-control-next" type="button"
+                                            data-bs-target="#carouselHotel<%= hotel.idHotel %>Room<%= index %>"
+                                            data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="visually-hidden">Siguiente</span>
+                                          </button>
+                                          <% } %>
+                                      </div>
+                                    </div>
+
+                                    <!-- Contenido de la habitación (lado derecho) -->
+
+                                    <div class="room-content elegant-hotel-design">
+
+                                      <!-- Encabezado -->
+
+                                      <div class="room-header mb-4">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                          <div>
+                                            <div class="category-container mb-2">
+                                              <span class="room-category-tag text-uppercase letter-spacing-1 fw-bold"><%= room.nomCategoria %></span>
+                                            </div><br>
+                                            <h2 class="room-name mb-0 text-primary">
+                                              <%= room.nomHabitacio || 'Suite Premium' %>
+                                            </h2>
+                                          </div>
+                                          <div class="text-end">
+                                            <div class="per-night-price">
+                                              <span class="price-amount h4">
+                                                <%= room.preuPerNit ? `${room.preuPerNit}€` : 'Consultar' %>
+                                              </span>
+                                              <span class="price-label small d-block">por noche</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>                               
+
+                                      <!-- Especificaciones -->
+
+                                      <div class="room-specs mb-4">
+                                        <div class="spec-item d-flex align-items-center mb-3">
+                                          <i class="fas fa-user-friends me-3"></i>
+                                          <span class="small">Capacidad para <%= room.capacitat || 'N/A' %> personas</span>
+                                        </div>
+                                      </div>
+                                      
+                                      <!-- Sección de precio total -->
+
+                                      <div class="total-price-highlight p-4 mb-4">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                          <div>
+                                            <div class="small mb-1">Estancia de <%= room.nights %> noches</div>
+                                            <div class="small">
+                                              <%= room.roomsRequested %> habitación(es)
+                                            </div>
+                                          </div>
+                                          <div class="text-end">
+                                            <div class="total-price">
+                                              <div class="small">Total</div>
+                                              <div class="price-display h1 mb-0">
+                                                <%= room.totalPrice.toFixed(2) %>€
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <!-- Botón de reserva -->
+
+                                      <a href="/reservation/select?hotelId=<%= room.idHotel %>&idCategoria=<%= room.idCategoria %>&nomCategoria=<%= encodeURIComponent(room.nomCategoria) %>&checkIn=<%= encodeURIComponent(checkIn) %>&checkOut=<%= encodeURIComponent(checkOut) %>&rooms=<%= room.roomsRequested %>&guests=<%= encodeURIComponent(requiredCapacity) %>&nights=<%= room.nights %>&totalPrice=<%= room.totalPrice %>"
+                                        class="btn btn-primary btn-reserva">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        Reservar Ahora
+                                      </a>
+                                    </div>
+                                  </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                            <% } else { %>
+                              
+                              <!-- Mensaje en caso de NO habitaciones disponibles -->
+
+                              <div class="alert alert-warning mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Actualmente no hay habitaciones disponibles en este hotel.
+                              </div>
+                              <% } %>
+                        </div>
+                        <% }); %>
+                          <% } %>
+                            <% } %>
+      </div>
+
+          <!-- ========================== SECCIÓN 2.2: RESULTADOS DE LA BÚSQUEDA POR CIUDAD ========================== -->
+
+    </div>
+
+    <!-- ========================== FIN DE SECCIÓN 2: RESULTADOS DE LA BÚSQUEDA ========================== -->
+
+    <div id="backToTop" class="show">
+      <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <%- include('../partials/footer') %>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/resultsScript.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/perfil.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <%- include('../partials/header') %>
+
+        <div class="container my-5">
+
+            <!-- Script para manejar mensajes flash -->
+            <% if (messages.success && messages.success.length> 0) { %>
+                <script>
+                    Swal.fire({
+                        title: '¡Éxito!',
+                        text: '<%= messages.success %>',
+                        icon: 'success',
+                        confirmButtonColor: "#0d2f63",
+                    });
+                </script>
+                <% } %>
+                    <% if (messages.error && messages.error.length> 0) { %>
+                        <script>
+                            Swal.fire({
+                                title: '¡Error!',
+                                text: '<%= messages.error %>',
+                                icon: 'error',
+                                confirmButtonColor: "#0d2f63",
+                            });
+                        </script>
+                        <% } %>
+
+                            <div class="row">
+                                <!-- Menú Lateral -->
+                                <div class="col-md-3 mb-4">
+                                    <div class="card profile-card">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-user fa-4x text-secondary mb-3"></i>
+                                            <h5 class="mb-1" id="username">
+                                                <%= profile.nom %>
+                                                    <%= profile.cognoms %>
+                                            </h5>
+                                            <br>
+                                            <hr>
+                                            <nav class="nav flex-column nav-pills">
+                                                <a class="nav-link" href="#historial" data-bs-toggle="tab"><i
+                                                        class="fas fa-history me-2"></i>Historial</a>
+                                                <a class="nav-link active" href="#reservas-activas"
+                                                    data-bs-toggle="tab"><i
+                                                        class="fas fa-calendar-check me-2"></i>Reservas Activas</a>
+                                                <a class="nav-link" href="#perfil" data-bs-toggle="tab"><i
+                                                        class="fas fa-user me-2"></i>Mi Perfil</a>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-9">
+                                    <div class="tab-content">
+
+                                        <!-- RESERVAS ACTIVAS -->
+                                        <div class="tab-pane fade show active" id="reservas-activas">
+                                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                                <h4 class="card-title mb-0"><i
+                                                        class="fas fa-calendar-check me-2"></i>Reservas Activas</h4>
+                                                <div class="col-md-5">
+                                                    <input type="search" id="searchActive" class="form-control"
+                                                        placeholder="Buscar reservas...">
+                                                </div>
+                                            </div>
+
+                                            <div class="list-group" id="activeReservations">
+                                                <% activeReservations.forEach(r=> { %>
+                                                    <div class="mb-3">
+                                                    <a href="#" class="list-group-item list-group-item-action">
+                                                        <strong>Núm. Reserva</strong> <%= r.codiReserva %>
+                                                        <br>
+                                                        <strong>Hotel <%= r.hotels.nomHotel %></strong>
+                                                        <hr>
+                                                        <br>
+                                                        <span class="text-muted">
+                                                            <i class="fas fa-calendar-alt fs-4 text-primary me-3"></i>
+                                                            del <strong><%= r.dataInici ? formatDate(r.dataInici) : "N/A" %></strong>
+                                                                al <strong><%= r.dataFi ? formatDate(r.dataFi) : "N/A" %></strong>
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                    <% }) %>
+                                                        <% if (!activeReservations.length) { %>
+                                                            <div class="text-center text-muted">Sin reservas activas
+                                                            </div>
+                                                            <% } %>
+                                            </div>
+                                        </div>
+
+                                        <!-- HISTORIAL -->
+                                        <div class="tab-pane fade" id="historial">
+                                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                                <h4 class="card-title mb-0"><i class="fas fa-history me-2"></i>Historial
+                                                    de Reservas</h4>
+                                                <div class="col-md-5">
+                                                    <input type="search" id="searchHistory" class="form-control"
+                                                        placeholder="Buscar en historial...">
+                                                </div>
+                                            </div>
+                                            <div class="list-group" id="historyReservations">
+                                                <% historyReservations.forEach(r=> { %>
+                                                    <div class="mb-3">
+                                                        <a href="#" class="list-group-item list-group-item-action">
+                                                            <strong>Núm. Reserva</strong> <%= r.codiReserva %>
+                                                            <br>
+                                                            <strong>Hotel <%= r.hotels.nomHotel %></strong>
+                                                            <hr>
+                                                            <br>
+                                                            <span class="text-muted">
+                                                                <i class="fas fa-calendar-alt fs-4 text-primary me-3"></i>
+                                                                del <strong><%= r.dataInici ? formatDate(r.dataInici) : "N/A" %></strong>
+                                                                    al <strong><%= r.dataFi ? formatDate(r.dataFi) : "N/A" %></strong>
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                    <% }) %>
+                                                        <% if (!historyReservations.length) { %>
+                                                            <div class="text-center text-muted">Sin historial de
+                                                                reservas</div>
+                                                            <% } %>
+                                            </div>
+                                        </div>
+
+                                        <!-- PERFIL -->
+                                        <div class="tab-pane fade" id="perfil">
+                                            <h4 class="card-title mb-4"><i class="fas fa-user-edit me-2"></i>Editar
+                                                Perfil</h4>
+                                            <form id="profileForm" action="/user/profile" method="POST"
+                                                class="needs-validation" novalidate>
+                                                <div class="row g-3">
+                                                    <!-- Nombre -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Nombre</label>
+                                                        <input type="text" name="nombre" class="form-control"
+                                                            value="<%= profile.nom %>">
+                                                    </div>
+                                                    <!-- Apellidos -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Apellidos</label>
+                                                        <input type="text" name="apellidos" class="form-control"
+                                                            value="<%= profile.cognoms %>">
+                                                    </div>
+                                                    <!-- DNI (solo lectura) -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">DNI</label>
+                                                        <input type="text" name="dni" class="form-control"
+                                                            value="<%= profile.dni %>" disabled>
+                                                    </div>
+                                                    <!-- Fecha de Nacimiento -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Fecha de Nacimiento</label>
+                                                        <input type="date" min="1900-01-01"name="fechaNacimiento" class="form-control"
+                                                            value="<%= profile.data_naixement ? profile.data_naixement.toISOString().slice(0, 10) : '' %>">
+                                                    </div>
+                                                    <!-- Email editable -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Email</label>
+                                                        <input type="email" name="email" class="form-control"
+                                                            value="<%= profile.email || '' %>" disabled>
+                                                    </div>
+                                                    <!-- Teléfono -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Teléfono</label>
+                                                        <input type="tel" name="telefono" pattern="[0-9]{9}"
+                                                            class="form-control" value="<%= profile.telefon || '' %>"
+                                                            required>
+                                                    </div>
+                                                    <!-- Calle -->
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Calle</label>
+                                                        <input type="text" name="calle" class="form-control"
+                                                            value="<%= profile.carrer || '' %>">
+                                                    </div>
+                                                    <!-- Número -->
+                                                    <div class="col-md-2">
+                                                        <label class="form-label">Número</label>
+                                                        <input type="text" name="numero" class="form-control"
+                                                            value="<%= profile.numero || '' %>">
+                                                    </div>
+                                                    <!-- Piso -->
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Piso <span>Puerta</span></label>
+                                                        <input type="text" name="piso" class="form-control"
+                                                            value="<%= profile.pis || '' %>">
+                                                    </div>
+                                                    <!--País-->
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">País</label>
+                                                        <select name="pais" id="pais" class="form-select" required>
+                                                            <option value="">Selecciona un país</option>
+                                                            <% countries.forEach(c=> { %>
+                                                                <option value="<%= c.idPais %>"
+                                                                    <%=profile.idPais===c.idPais ? 'selected' : '' %>>
+                                                                    <%= c.pais %>
+                                                                </option>
+                                                                <% }) %>
+                                                        </select>
+                                                    </div>
+                                                    <!-- Ciudad -->
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Ciudad</label>
+                                                        <input type="text" name="ciudad" class="form-control"
+                                                            value="<%= profile.ciutat || '' %>">
+                                                    </div>
+
+                                                    <!-- Código Postal -->
+                                                    <div class="col-md-2">
+                                                        <label class="form-label">Código Postal</label>
+                                                        <input type="text" name="codigoPostal" class="form-control"
+                                                            value="<%= profile.codi_postal || '' %>">
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="fas fa-save me-2"></i>Guardar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+        </div>
+
+        <%- include('../partials/footer') %>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                // Simple filtro de búsqueda para ambas secciones
+                function setupSearch(inputId, listId) {
+                    const input = document.getElementById(inputId);
+                    const list = document.getElementById(listId);
+                    input.addEventListener('input', () => {
+                        const term = input.value.toLowerCase();
+                        Array.from(list.children).forEach(item => {
+                            const text = item.textContent.toLowerCase();
+                            item.style.display = text.includes(term) ? '' : 'none';
+                        });
+                    });
+                }
+                setupSearch('searchActive', 'activeReservations');
+                setupSearch('searchHistory', 'historyReservations');
+            </script>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const hash = window.location.hash;
+                    if (hash) {
+                        // Busca el enlace de pestaña que apunte a ese hash
+                        const triggerEl = document.querySelector(`.nav-link[href="${hash}"]`);
+                        if (triggerEl) {
+                            // Usa la API de Bootstrap para mostrar esa pestaña
+                            const tab = new bootstrap.Tab(triggerEl);
+                            tab.show();
+                        }
+                    }
+                });
+
+                window.addEventListener('hashchange', () => {
+                    const h = window.location.hash;
+                    const el = document.querySelector(`.nav-link[href="${h}"]`);
+                    if (el) new bootstrap.Tab(el).show();
+                });
+
+            </script>
+
+
+</body>
+
+</html>

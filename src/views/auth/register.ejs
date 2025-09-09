@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear Perfil de Cliente - Paradise Experience</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <%- include('../partials/header') %>
+
+    <div class="container mt-5 pt-5">
+      <br /><br />
+      <h1 class="text-center mb-5">Crear Perfil de Cliente</h1>
+
+      <!-- Mensajes de Error -->
+      <% if (errorMessages && errorMessages.length> 0) { %>
+        <div class="alert alert-danger" role="alert">
+          <%= errorMessages[0] %>
+        </div>
+        <% } %>
+
+          <form id="profile-form" action="/auth/register" method="POST">
+            <input type="hidden" name="redirect" value="<%= redirect %>" />
+            <!-- Información Personal (clients table) -->
+            <div class="mt-5 mb-4">
+              <h2><i class="fas fa-user-circle me-3"></i> Información Personal</h2>
+              <hr />
+              <p class="form-note">
+                Los campos marcados con
+                <span style="color: red; font-size: 20px">* </span> son
+                obligatorios.
+              </p>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label for="nom" class="form-label required-field">Nombre:</label>
+                <input type="text" id="nom" name="nom" class="form-control" maxlength="50" pattern="[A-Za-zÀ-ÿ\s]+" required placeholder="Ingresa tu nombre"
+                  value="<%= data?.nom || '' %>" />
+              </div>
+              <div class="col-md-6">
+                <label for="cognoms" class="form-label required-field">Apellidos:</label>
+                <input type="text" id="cognoms" name="cognoms" class="form-control" maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" required
+                  placeholder="Ingresa tus apellidos" value="<%= data?.cognoms || '' %>" />
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label for="data_naixement" class="form-label">Fecha de nacimiento:</label>
+                <input type="date" id="data_naixement" name="data_naixement" class="form-control" required
+                  value="<%= data?.data_naixement || '' %>" />
+              </div>
+              <div class="col-md-6">
+                <label for="dni" class="form-label required-field">DNI:</label>
+                <input type="text" id="dni" name="dni" pattern="[0-9]{8}[A-Za-z]" maxlength="9" class="form-control" required placeholder="Ingresa tu DNI" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="telefon" class="form-label required-field">Teléfono:</label>
+              <input type="tel" id="telefon" name="telefon" pattern="[0-9]{9,15}" inputmode="numeric" class="form-control" required
+                placeholder="Ingresa tu número de teléfono" value="<%= data?.telefon || '' %>" />
+            </div>
+
+            <!-- Address Information -->
+            <div class="mt-5 mb-4">
+              <h2><i class="fas fa-map-marker-alt me-3"></i> Dirección</h2>
+              <hr />
+            </div>
+
+            <div class="mb-4">
+              <label for="carrer" class="form-label">Calle:</label>
+              <input type="text" id="carrer" name="carrer" class="form-control" maxlength="100" pattern="[^<>]+" placeholder="Ingresa tu calle"
+                value="<%= data?.carrer || '' %>" />
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <label for="numero" class="form-label">Número:</label>
+                <input type="text" id="numero" name="numero" class="form-control" maxlength="10" pattern="[A-Za-z0-9\-]+" placeholder="Número"
+                  value="<%= data?.numero || '' %>" />
+              </div>
+              <div class="col-md-4">
+                <label for="pis" class="form-label">Piso:</label>
+                <input type="text" id="pis" name="pis" class="form-control" maxlength="10" pattern="[A-Za-z0-9\-]+" placeholder="Piso"
+                  value="<%= data?.pis || '' %>" />
+              </div>
+              <div class="col-md-4">
+                <label for="codi_postal" class="form-label">Código Postal:</label>
+                <input type="text" id="codi_postal" name="codi_postal" maxlength="10" pattern="[0-9]{4,10}" class="form-control" placeholder="Código Postal"
+                  value="<%= data?.codi_postal || '' %>" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="ciutat" class="form-label">Ciudad:</label>
+              <input type="text" id="ciutat" name="ciutat" maxlength="50" pattern="[A-Za-zÀ-ÿ\s]+" class="form-control" placeholder="Ingresa tu ciudad"
+                value="<%= data?.ciutat || '' %>" />
+            </div>
+
+            <!-- Selección de País y Provincia -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label for="idPais" class="form-label">País:</label>
+                <select id="idPais" name="idPais" class="form-select">
+                  <option value="" disabled selected>Seleccione un país</option>
+                  <% paisos.forEach(pais=> { %>
+                    <option value="<%= pais.idPais %>">
+                      <%= pais.pais %>
+                    </option>
+                    <% }); %>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="idProvincia" class="form-label">Provincia:</label>
+                <select id="idProvincia" name="idProvincia" class="form-select">
+                  <option value="" disabled selected>
+                    Seleccione una provincia
+                  </option>
+                  <!-- Se llenarán dinámicamente -->
+                </select>
+              </div>
+            </div>
+
+            <!-- User Account Information (usuaris table) -->
+            <div class="mt-5 mb-4">
+              <h2><i class="fas fa-lock me-3"></i> Información de Acceso</h2>
+              <hr />
+              <p class="form-note">
+                Los campos marcados con
+                <span style="color: red; font-size: 20px">* </span> son
+                obligatorios.
+              </p>
+            </div>
+
+            <div class="mb-4">
+              <label for="email" class="form-label required-field">Email:</label>
+              <input type="email" id="email" name="email" class="form-control" maxlength="100" required placeholder="Ingresa tu email"
+                value="<%= data?.email || '' %>" />
+            </div>
+
+            <div class="mb-4 position-relative" >
+              <label for="password" class="form-label required-field">Contraseña:</label>
+              <div class="input-group">
+              <input type="password" id="password" name="password" class="form-control" required minlength="8" maxlength="100"
+               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_+=<>(){}~-]).{8,}$"
+                title="Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y símbolo (!@#$%^&*_+=<>(){}~-)" autocomplete="new-password"
+                placeholder="Crea una contraseña" />
+                <button type="button" class="btn btn-outline-primary" id="togglePassword">
+                <i class="fas fa-eye-slash" id="eyeIcon"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mt-1">
+              <div class="progress">
+                <div id="pwdMeter" class="progress-bar" role="progressbar" style="width:0%" aria-valuenow="0"
+                  aria-valuemin="0" aria-valuemax="4">
+                </div>
+              </div>
+              <small id="pwdMsg" class="text-muted">Seguridad: Muy débil</small>
+            </div>
+            <br>
+
+
+
+            <div class="mb-4">
+              <label for="password2" class="form-label required-field">Repite la contraseña:</label>
+              <input type="password" id="password2" name="password2" class="form-control" required
+                autocomplete="new-password" placeholder="Vuelve a escribir la contraseña" />
+              <div class="invalid-feedback">Las contraseñas no coinciden.</div>
+            </div>
+
+            <!-- Aceptación de términos -->
+            <div class="form-check mb-4">
+              <input type="checkbox" id="auth-check" name="auth-check" class="form-check-input" required />
+              <label for="auth-check" class="form-check-label required-field">
+                Confirmo que la información proporcionada es correcta y verídica.
+              </label>
+            </div>
+
+            <div class="form-check mb-4">
+              <input type="checkbox" id="terms-conditions" name="terms-conditions" class="form-check-input" required />
+              <label for="terms-conditions" class="form-check-label required-field">
+                Acepto los
+                <a href="/terminos-y-condiciones" target="_blank">términos y condiciones</a>.
+              </label>
+            </div>
+            
+            <!-- Botón de Envío -->
+            <div class="text-center mb-5">
+              <button type="submit" class="btn btn-primary">Crear Perfil</button>
+            </div>
+          </form>
+    </div>
+
+    <!-- Footer -->
+    <%- include('../partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/provincias.js"></script>
+    <script src="/js/registerScript.js"></script>    
+
+</body>
+</html>
